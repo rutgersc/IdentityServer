@@ -19,34 +19,30 @@ public static class ValidatedAuthorizeRequestExtensions
 {
     public static void RemovePrompt(this ValidatedAuthorizeRequest request)
     {
-        var suppress = new StringBuilder();
-        if (request.PromptModes.Contains(OidcConstants.PromptModes.Login))
+        var suppress = new List<string>();
+        if (request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.Login))
         {
-            suppress.Append(OidcConstants.PromptModes.Login);
+            suppress.Add(OidcConstants.PromptModes.Login);
         }
-        if (request.PromptModes.Contains(OidcConstants.PromptModes.SelectAccount))
+        if (request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.SelectAccount))
         {
-            if (suppress.Length > 0)
+            if (suppress.Count > 0)
             {
-                suppress.Append(" ");
+                suppress.Add(" ");
             }
-            suppress.Append(OidcConstants.PromptModes.SelectAccount);
+            suppress.Add(OidcConstants.PromptModes.SelectAccount);
         }
-        if (request.PromptModes.Contains(OidcConstants.PromptModes.Create))
+        if (request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.Create))
         {
-            if (suppress.Length > 0)
+            if (suppress.Count > 0)
             {
-                suppress.Append(" ");
+                suppress.Add(" ");
             }
-            suppress.Append(OidcConstants.PromptModes.Create);
+            suppress.Add(OidcConstants.PromptModes.Create);
         }
 
-        request.Raw.Add(Constants.SuppressedPrompt, suppress.ToString());
-        request.PromptModes = request.PromptModes.Except(new[] { 
-            OidcConstants.PromptModes.Login, 
-            OidcConstants.PromptModes.SelectAccount,
-            OidcConstants.PromptModes.Create
-        }).ToArray();
+        request.Raw.Add(Constants.SuppressedPrompt, string.Join(" ", suppress));
+        request.SuppressedPromptModes = suppress;
     }
 
     public static string GetPrefixedAcrValue(this ValidatedAuthorizeRequest request, string prefix)

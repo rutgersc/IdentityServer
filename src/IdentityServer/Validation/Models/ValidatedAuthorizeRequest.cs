@@ -144,12 +144,12 @@ public class ValidatedAuthorizeRequest : ValidatedRequest
     public IEnumerable<string> PromptModes { get; set; } = Enumerable.Empty<string>();
 
     /// <summary>
-    /// Gets or sets the collection of original prompt modes.
+    /// Gets the collection of original prompt modes that are not suppressed.
     /// </summary>
     /// <value>
     /// The collection of original prompt modes.
     /// </value>
-    internal IEnumerable<string> OriginalPromptModes { get; set; } = Enumerable.Empty<string>();
+    internal IEnumerable<string> UnSuppressedPromptModes => this.PromptModes.Except(this.SuppressedPromptModes).ToArray();
 
     /// <summary>
     /// Gets or sets the collection of suppressed prompt modes.

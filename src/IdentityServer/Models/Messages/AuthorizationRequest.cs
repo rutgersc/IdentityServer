@@ -140,8 +140,7 @@ public class AuthorizationRequest
         IdP = request.GetIdP();
         Tenant = request.GetTenant();
         LoginHint = request.LoginHint;
-        // this allows the UI to see the original prompt modes
-        PromptModes = request.OriginalPromptModes;
+        PromptModes = request.PromptModes;
         AcrValues = request.GetAcrValues();
         ValidatedResources = request.ValidatedResources;
         Parameters = request.Raw;

@@ -118,7 +118,7 @@ public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionRespon
             }
         }
 
-        if ((result.ResponseType == InteractionResponseType.UserInteraction) && request.PromptModes.Contains(OidcConstants.PromptModes.None))
+        if ((result.ResponseType == InteractionResponseType.UserInteraction) && request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.None))
         {
             // prompt=none means do not show the UI
             Logger.LogInformation("Changing response to LoginRequired: prompt=none was requested");
@@ -143,7 +143,7 @@ public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionRespon
         InteractionResponse result;
 
         // check prompt=create here, as we don't support it with any other combo
-        if (request.PromptModes.Contains(OidcConstants.PromptModes.Create))
+        if (request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.Create))
         {
             Logger.LogInformation("Showing create account: request contains prompt=create");
             request.RemovePrompt();
@@ -169,10 +169,10 @@ public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionRespon
     {
         using var activity = Tracing.BasicActivitySource.StartActivity("AuthorizeInteractionResponseGenerator.ProcessLogin");
         
-        if (request.PromptModes.Contains(OidcConstants.PromptModes.Login) ||
-            request.PromptModes.Contains(OidcConstants.PromptModes.SelectAccount))
+        if (request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.Login) ||
+            request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.SelectAccount))
         {
-            Logger.LogInformation("Showing login: request contains prompt={0}", request.PromptModes.ToSpaceSeparatedString());
+            Logger.LogInformation("Showing login: request contains prompt={0}", request.UnSuppressedPromptModes.ToSpaceSeparatedString());
 
             // remove prompt so when we redirect back in from login page
             // we won't think we need to force a prompt again
@@ -299,17 +299,17 @@ public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionRespon
             
         if (request == null) throw new ArgumentNullException(nameof(request));
 
-        if (request.PromptModes.Any() &&
-            !request.PromptModes.Contains(OidcConstants.PromptModes.None) &&
-            !request.PromptModes.Contains(OidcConstants.PromptModes.Consent))
+        if (request.UnSuppressedPromptModes.Any() &&
+            !request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.None) &&
+            !request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.Consent))
         {
-            Logger.LogError("Invalid prompt mode: {promptMode}", request.PromptModes.ToSpaceSeparatedString());
+            Logger.LogError("Invalid prompt mode: {promptMode}", request.UnSuppressedPromptModes.ToSpaceSeparatedString());
             throw new ArgumentException("Invalid PromptMode");
         }
 
         var consentRequired = await Consent.RequiresConsentAsync(request.Subject, request.Client, request.ValidatedResources.ParsedScopes);
 
-        if (consentRequired && request.PromptModes.Contains(OidcConstants.PromptModes.None))
+        if (consentRequired && request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.None))
         {
             Logger.LogInformation("Error: prompt=none requested, but consent is required.");
 
@@ -319,7 +319,7 @@ public class AuthorizeInteractionResponseGenerator : IAuthorizeInteractionRespon
             };
         }
 
-        if (request.PromptModes.Contains(OidcConstants.PromptModes.Consent) || consentRequired)
+        if (request.UnSuppressedPromptModes.Contains(OidcConstants.PromptModes.Consent) || consentRequired)
         {
             var response = new InteractionResponse();
 

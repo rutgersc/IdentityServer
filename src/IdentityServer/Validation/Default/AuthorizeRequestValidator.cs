@@ -747,7 +747,7 @@ internal class AuthorizeRequestValidator : IAuthorizeRequestValidator
                     return Invalid(request, description: "Invalid prompt");
                 }
 
-                request.OriginalPromptModes = prompts;
+                request.PromptModes = prompts;
             }
             else
             {
@@ -783,8 +783,6 @@ internal class AuthorizeRequestValidator : IAuthorizeRequestValidator
                 _logger.LogDebug("Unsupported suppressed_prompt mode - ignored: " + prompt);
             }
         }
-
-        request.PromptModes = request.OriginalPromptModes.Except(request.SuppressedPromptModes).ToArray();
 
         //////////////////////////////////////////////////////////
         // check ui locales

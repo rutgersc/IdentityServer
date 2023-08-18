@@ -244,17 +244,17 @@ public class Authorize_ProtocolValidation_Valid
             parameters[OidcConstants.AuthorizeRequest.Prompt] = "consent login";
             parameters[Constants.SuppressedPrompt] = "login";
             var result = await validator.ValidateAsync(parameters);
-            result.ValidatedRequest.PromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent });
-            result.ValidatedRequest.OriginalPromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent, OidcConstants.PromptModes.Login });
+            result.ValidatedRequest.PromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent, OidcConstants.PromptModes.Login });
             result.ValidatedRequest.SuppressedPromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Login });
+            result.ValidatedRequest.UnSuppressedPromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent });
         }
         {
             parameters[OidcConstants.AuthorizeRequest.Prompt] = "consent login";
             parameters[Constants.SuppressedPrompt] = "login consent";
             var result = await validator.ValidateAsync(parameters);
-            result.ValidatedRequest.PromptModes.Should().BeEmpty();
-            result.ValidatedRequest.OriginalPromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent, OidcConstants.PromptModes.Login });
+            result.ValidatedRequest.PromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent, OidcConstants.PromptModes.Login });
             result.ValidatedRequest.SuppressedPromptModes.Should().BeEquivalentTo(new[] { OidcConstants.PromptModes.Consent, OidcConstants.PromptModes.Login });
+            result.ValidatedRequest.UnSuppressedPromptModes.Should().BeEmpty();
         }
     }
 }
